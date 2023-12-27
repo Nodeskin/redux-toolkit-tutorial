@@ -1,18 +1,34 @@
-import CartContainer from './components/CartContainer';
-import NavBar from './components/NavBar';
-import { useDispatch, useSelector } from 'react-redux';
-import { calculateTotals } from './features/cart/CartSlice';
-import { useEffect } from 'react';
+import CartContainer from "./components/CartContainer";
+import NavBar from "./components/NavBar";
+import { useDispatch, useSelector } from "react-redux";
+import { calculateTotals, getCartItems } from "./features/cart/CartSlice";
+import { useEffect } from "react";
+import Modal from "./components/Modal";
+
 function App() {
-  const {CartItems} = useSelector((store)=> store.cart)
- const dispatch = useDispatch()
+  const { cartItems, isLoading } = useSelector((store) => store.cart);
+  const { isOpen } = useSelector((store) => store.modal);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(calculateTotals());
+  }, [cartItems]);
+
   useEffect(()=>{
-    dispatch(calculateTotals())
-  },[CartItems])
+    dispatch(getCartItems())
+  }, [])
+
+
+  if (isLoading){
+    return( <div className="loading">
+      <h1>Loading...</h1>
+    </div>)
+  };
 
   return (
     <main>
-      <NavBar/>
+      {isOpen && <Modal />}
+      <NavBar />
       <CartContainer />
     </main>
   );
